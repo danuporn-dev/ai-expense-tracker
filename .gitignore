@@ -1,0 +1,27 @@
+# Secrets & local files
+.env
+.env.*
+!.env.example
+backend/config/app-config.php
+backend/storage/receipts/*
+!backend/storage/receipts/.gitkeep
+.vscode/settings.json
+
+# Generated Flutter/Android files
+mobile/.dart_tool/
+mobile/.flutter-plugins*
+mobile/build/
+mobile/.idea/
+mobile/android/.gradle/
+mobile/android/local.properties
+*.iml
+*.log
+*.apk
+*.aab
+*.jks
+*.keystore
+key.properties
+
+# OS files
+.DS_Store
+Thumbs.db

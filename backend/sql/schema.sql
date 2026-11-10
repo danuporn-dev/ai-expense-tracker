@@ -1,0 +1,140 @@
+CREATE DATABASE IF NOT EXISTS finance_tracker CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE finance_tracker;
+
+CREATE TABLE IF NOT EXISTS users (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ name VARCHAR(100) NOT NULL,
+ email VARCHAR(190) NOT NULL UNIQUE,
+ password_hash VARCHAR(255) NOT NULL,
+ avatar_data MEDIUMBLOB NULL,
+ avatar_mime VARCHAR(32) NULL,
+ created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS auth_tokens (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ user_id BIGINT UNSIGNED NOT NULL,
+ token_hash CHAR(64) NOT NULL UNIQUE,
+ expires_at DATETIME NOT NULL,
+ created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+ INDEX idx_token_expiry (expires_at)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS categories (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ user_id BIGINT UNSIGNED NOT NULL,
+ type ENUM('income','expense') NOT NULL,
+ name VARCHAR(80) NOT NULL,
+ icon_key VARCHAR(40) NOT NULL DEFAULT 'other',
+ UNIQUE KEY uq_category (user_id,type,name),
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS transactions (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ user_id BIGINT UNSIGNED NOT NULL,
+ category_id BIGINT UNSIGNED NULL,
+ type ENUM('income','expense') NOT NULL,
+ title VARCHAR(150) NOT NULL,
+ amount DECIMAL(12,2) NOT NULL,
+ transaction_date DATE NOT NULL,
+ note TEXT NULL,
+ source ENUM('manual','ai','subscription','installment') NOT NULL DEFAULT 'manual',
+ created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+ FOREIGN KEY(category_id) REFERENCES categories(id) ON DELETE SET NULL,
+ INDEX idx_tx_user_date(user_id,transaction_date),
+ INDEX idx_tx_user_type(user_id,type)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS receipts (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ user_id BIGINT UNSIGNED NOT NULL,
+ transaction_id BIGINT UNSIGNED NULL UNIQUE,
+ file_name VARCHAR(100) NOT NULL,
+ mime_type VARCHAR(40) NOT NULL,
+ sha256 CHAR(64) NOT NULL,
+ extracted_json LONGTEXT NOT NULL,
+ created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+ FOREIGN KEY(transaction_id) REFERENCES transactions(id) ON DELETE SET NULL,
+ INDEX idx_receipt_duplicate(user_id,sha256)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS budgets (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ user_id BIGINT UNSIGNED NOT NULL,
+ category_id BIGINT UNSIGNED NULL,
+ budget_key VARCHAR(40) NOT NULL,
+ month_key CHAR(7) NOT NULL,
+ amount DECIMAL(12,2) NOT NULL,
+ created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+ FOREIGN KEY(category_id) REFERENCES categories(id) ON DELETE CASCADE,
+ UNIQUE KEY uq_budget(user_id,month_key,budget_key)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS subscriptions (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ user_id BIGINT UNSIGNED NOT NULL,
+ service_name VARCHAR(100) NOT NULL,
+ icon_key VARCHAR(40) NOT NULL DEFAULT 'other',
+ amount DECIMAL(12,2) NOT NULL,
+ start_date DATE NOT NULL,
+ billing_day TINYINT UNSIGNED NOT NULL,
+ cycle ENUM('monthly','yearly') NOT NULL DEFAULT 'monthly',
+ active BOOLEAN NOT NULL DEFAULT TRUE,
+ created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS subscription_payments (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ user_id BIGINT UNSIGNED NOT NULL,
+ subscription_id BIGINT UNSIGNED NOT NULL,
+ due_date DATE NOT NULL,
+ transaction_id BIGINT UNSIGNED NOT NULL UNIQUE,
+ paid_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+ FOREIGN KEY(subscription_id) REFERENCES subscriptions(id) ON DELETE CASCADE,
+ FOREIGN KEY(transaction_id) REFERENCES transactions(id) ON DELETE CASCADE,
+ UNIQUE KEY uq_paid_period(subscription_id,due_date)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS installment_plans (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ user_id BIGINT UNSIGNED NOT NULL,
+ category_id BIGINT UNSIGNED NULL,
+ product_name VARCHAR(100) NOT NULL,
+ price DECIMAL(12,2) NOT NULL,
+ down_payment DECIMAL(12,2) NOT NULL DEFAULT 0,
+ down_transaction_id BIGINT UNSIGNED NULL UNIQUE,
+ installment_count SMALLINT UNSIGNED NOT NULL,
+ first_due_date DATE NOT NULL,
+ total_payable DECIMAL(12,2) NOT NULL,
+ note VARCHAR(1000) NOT NULL DEFAULT '',
+ created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+ FOREIGN KEY(category_id) REFERENCES categories(id) ON DELETE SET NULL,
+ FOREIGN KEY(down_transaction_id) REFERENCES transactions(id) ON DELETE SET NULL,
+ INDEX idx_plan_user(user_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS installment_payments (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ plan_id BIGINT UNSIGNED NOT NULL,
+ installment_number SMALLINT UNSIGNED NOT NULL,
+ due_date DATE NOT NULL,
+ amount DECIMAL(12,2) NOT NULL,
+ transaction_id BIGINT UNSIGNED NULL UNIQUE,
+ paid_date DATE NULL,
+ proof_data MEDIUMBLOB NULL,
+ proof_mime VARCHAR(32) NULL,
+ FOREIGN KEY(plan_id) REFERENCES installment_plans(id) ON DELETE CASCADE,
+ FOREIGN KEY(transaction_id) REFERENCES transactions(id) ON DELETE SET NULL,
+ UNIQUE KEY uq_installment(plan_id,installment_number),
+ INDEX idx_installment_due(due_date)
+) ENGINE=InnoDB;
+
