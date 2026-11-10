@@ -6,8 +6,6 @@ Process ที่ 8 เพิ่มแล้ว: **ผ่อนชำระส�
 
 ## วิดีโอแนะนำโปรเจกต์
 
-วิดีโอแนวตั้ง 9:16 ความยาว 60 วินาที พร้อมข้อความไทยและดนตรีบรรเลง จากภาพหน้าจอแอปจริง
-
 [<img src="docs/video/My-Wallet-AI-cover.png" width="270" alt="วิดีโอแนะนำ My Wallet AI — คลิกเพื่อเปิดไฟล์ MP4">](https://github.com/danuporn-dev/ai-expense-tracker/raw/refs/heads/main/docs/video/My-Wallet-AI-Reels-60s.mp4)
 
 [เปิดหรือดาวน์โหลดวิดีโอ MP4](https://github.com/danuporn-dev/ai-expense-tracker/raw/refs/heads/main/docs/video/My-Wallet-AI-Reels-60s.mp4) · [แคปชันสำหรับโพสต์](docs/video/caption-th.txt) · [รายละเอียดและที่มา](docs/video/README.md)
