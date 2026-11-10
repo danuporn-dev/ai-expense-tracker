@@ -10,7 +10,7 @@ Process ที่ 8 เพิ่มแล้ว: **ผ่อนชำระส�
 
 | บัญชีผู้ใช้ | Dashboard |
 | --- | --- |
-| [<img src="screenshotforgithub/01-auth-login.png" width="240" alt="เข้าสู่ระบบ">](screenshotforgithub/01-auth-login.png) | [<img src="screenshotforgithub/02-dashboard-month.png" width="240" alt="ภาพรวมการเงิน">](screenshotforgithub/02-dashboard-month.png) |
+| [<img src="screenshotforgithub/01-auth-welcome.png" width="240" alt="เข้าสู่ระบบ — ยินดีต้อนรับ">](screenshotforgithub/01-auth-welcome.png) | [<img src="screenshotforgithub/02-dashboard-month.png" width="240" alt="ภาพรวมการเงิน">](screenshotforgithub/02-dashboard-month.png) |
 
 | สแกนบิล AI | รายรับ |
 | --- | --- |

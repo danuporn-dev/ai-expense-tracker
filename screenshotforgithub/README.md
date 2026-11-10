@@ -21,7 +21,7 @@
 
 | ขั้นตอน | ขั้นตอนถัดไป |
 | --- | --- |
-| [<img src="01-auth-login.png" width="240" alt="เข้าสู่ระบบ">](01-auth-login.png)<br>เข้าสู่ระบบ | [<img src="01-auth-register.png" width="240" alt="สมัครสมาชิก">](01-auth-register.png)<br>สมัครสมาชิก |
+| [<img src="01-auth-welcome.png" width="240" alt="เข้าสู่ระบบ — ยินดีต้อนรับ">](01-auth-welcome.png)<br>เข้าสู่ระบบ — ยินดีต้อนรับ | [<img src="01-auth-register.png" width="240" alt="สมัครสมาชิก">](01-auth-register.png)<br>สมัครสมาชิก |
 | [<img src="01-auth-profile.png" width="240" alt="แก้ไขข้อมูลส่วนตัว">](01-auth-profile.png)<br>แก้ไขข้อมูลส่วนตัว | — |
 
 <a id="process-2"></a>
