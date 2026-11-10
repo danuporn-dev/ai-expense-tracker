@@ -96,7 +96,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   const SizedBox(height: 26),
                   Text(
-                    register ? 'เริ่มต้นกับบัญชีใหม่' : 'ยินดีต้อนรับกลับมา',
+                    register ? 'เริ่มต้นกับบัญชีใหม่' : 'ยินดีต้อนรับ',
                     style: const TextStyle(
                       fontSize: 23,
                       fontWeight: FontWeight.w700,
